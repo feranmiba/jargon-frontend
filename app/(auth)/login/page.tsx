@@ -3,35 +3,28 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/app/utils/apis/auth";
 
-export default function Signup() {
-  const { signUp, signUpLoading } = useAuth();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+export default function Login() {
+  const { login, loginLoading } = useAuth();
+  const [form, setForm] = useState({ email: "", password: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    await signUp(form);
+    await login(form);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base text-base">
       <motion.div
-        className="bg-white dark:bg-neutral-900 rounded-2xl p-8 shadow-lg w-full max-w-md"
+        className="bg-base rounded-2xl p-8 shadow-lg w-full max-w-md"
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.4 }}
       >
         <h2 className="text-2xl font-semibold text-title mb-6 text-center">
-          Create an Account
+          Welcome Back
         </h2>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="w-full p-3 rounded-lg border border-primary/20 bg-transparent focus:outline-none focus:border-primary"
-          />
           <input
             type="email"
             placeholder="Email"
@@ -48,13 +41,14 @@ export default function Signup() {
           />
           <button
             type="submit"
-            disabled={signUpLoading}
+            disabled={loginLoading}
             className="w-full py-3 bg-primary text-white rounded-lg hover:opacity-90 transition disabled:opacity-70"
           >
-            {signUpLoading ? "Signing up..." : "Sign Up"}
+            {loginLoading ? "Logging in..." : "Login"}
           </button>
         </form>
       </motion.div>
     </div>
   );
 }
+

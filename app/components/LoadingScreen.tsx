@@ -9,7 +9,7 @@ const messages = [
   "Calibrating access permissions...",
   "Almost there...",
   "Finalizing setup...",
-  "Welcome to Jargon!",
+  "Completed!",
 ];
 
 export default function LoadingScreen() {
