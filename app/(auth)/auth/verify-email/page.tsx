@@ -1,6 +1,4 @@
-// ==========================================
-// FILE: app/(auth)/verify-email/page.tsx
-// ==========================================
+
 "use client";
 import { motion } from "framer-motion";
 import { useState, useRef } from "react";
