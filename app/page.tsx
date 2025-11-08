@@ -3,8 +3,13 @@
 import { motion } from "framer-motion";
 import ThemeToggle from "./components/ThemeToggle";
 import { Github, Linkedin, Twitter } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+
+  const router = useRouter();
+
+
   const features = [
     {
       title: "Data Ownership",
@@ -63,7 +68,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button className="px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg hover:shadow-primary/30">
+          <button className="px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg hover:shadow-primary/30" onClick={() => router.push('/auth/signup')}>
             Get Started
           </button>
           <button className="px-8 py-4 rounded-xl border border-primary text-primary font-semibold text-lg hover:bg-primary/10 transition">

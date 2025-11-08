@@ -8,7 +8,7 @@ import { useAuthStore } from '../store/auth';
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'https://your-backend-api.com/api/auth';
 
-// 🔹 Generic request helper
+
 async function request(endpoint: string, data?: any, method: string = 'POST') {
   const res = await fetch(`${API_URL}/${endpoint}`, {
     method,
@@ -27,9 +27,9 @@ async function request(endpoint: string, data?: any, method: string = 'POST') {
 export function useAuth() {
   const { setToken, clearToken } = useAuthStore();
 
-  // 🔹 SIGN UP
+
   const signUpMutation = useMutation({
-    mutationFn: (data: AuthInputs) => request('signup', data),
+    mutationFn: (data: AuthInputs) => request('create-user', data),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: 'loading', message: 'Creating account...' });
@@ -52,7 +52,7 @@ export function useAuth() {
 
   // 🔹 LOGIN
   const loginMutation = useMutation({
-    mutationFn: (data: AuthInputs) => request('login', data),
+    mutationFn: (data: AuthInputs) => request('user_login', data),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: 'loading', message: 'Logging in...' });
@@ -85,7 +85,7 @@ export function useAuth() {
 
   // 🔹 VERIFY EMAIL
   const verifyEmailMutation = useMutation({
-    mutationFn: (data: { token: string }) => request('verify-email', data),
+    mutationFn: (data: { token: string }) => request('verify_email', data),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: 'loading', message: 'Verifying email...' });
@@ -129,7 +129,6 @@ export function useAuth() {
     },
   });
 
-  // ✅ Add explicit loading flags for easy use in UI
   const signUpLoading = signUpMutation.status === 'pending';
   const loginLoading = loginMutation.status === 'pending';
   const verifyEmailLoading = verifyEmailMutation.status === 'pending';
