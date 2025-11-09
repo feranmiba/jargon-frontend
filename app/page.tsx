@@ -68,7 +68,7 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button className="px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg hover:shadow-primary/30" onClick={() => router.push('/auth/signup')}>
+          <button className="px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg hover:shadow-primary/30 cursor-pointer" onClick={() => router.push('/auth/signup')}>
             Get Started
           </button>
           <button className="px-8 py-4 rounded-xl border border-primary text-primary font-semibold text-lg hover:bg-primary/10 transition">

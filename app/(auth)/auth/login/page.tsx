@@ -1,19 +1,25 @@
-
 "use client";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useAuth } from "@/app/utils/apis/auth";
-import { Mail, Lock, Eye, EyeOff, Shield } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 
 export default function Login() {
-  const { login, loginLoading } = useAuth();
-  const [form, setForm] = useState({ email: "", password: "" });
+  const { loginMutation, loginLoading } = useAuth();
+  const [form, setForm] = useState({ username: "", password: "" }); 
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    await login(form);
+    try {
+      const res = await loginMutation.mutateAsync(form);
+      if (res?.status === 200 || res?.success) {
+        // redirect or perform post-login logic
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (
@@ -38,18 +44,20 @@ export default function Login() {
         </div>
 
         <div className="space-y-4">
+          {/* Username field */}
           <div className="relative group">
             <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary/60 group-focus-within:text-primary transition-colors" />
             <input
-              type="email"
-              placeholder="Email Address"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+              type="text"
+              placeholder="Email or Username"
+              value={form.username}
+              onChange={(e) => setForm({ ...form, username: e.target.value })}
+              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
               className="w-full pl-12 pr-4 py-3.5 bg-base border-2 border-primary/20 dark:border-primary/30 rounded-xl text-base placeholder-base placeholder:opacity-40 focus:outline-none focus:border-primary transition-all"
             />
           </div>
 
+          {/* Password field */}
           <div className="relative group">
             <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary/60 group-focus-within:text-primary transition-colors" />
             <input
@@ -57,17 +65,19 @@ export default function Login() {
               placeholder="Password"
               value={form.password}
               onChange={(e) => setForm({ ...form, password: e.target.value })}
-              onKeyPress={(e) => e.key === 'Enter' && handleSubmit()}
+              onKeyPress={(e) => e.key === "Enter" && handleSubmit()}
               className="w-full pl-12 pr-12 py-3.5 bg-base border-2 border-primary/20 dark:border-primary/30 rounded-xl text-base placeholder-base placeholder:opacity-40 focus:outline-none focus:border-primary transition-all"
             />
             <button
               onClick={() => setShowPassword(!showPassword)}
+              type="button"
               className="absolute right-4 top-1/2 transform -translate-y-1/2 text-primary/60 hover:text-primary transition-colors"
             >
               {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </button>
           </div>
 
+          {/* Remember + Forgot */}
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center text-base opacity-60 cursor-pointer hover:opacity-80 transition-opacity">
               <input type="checkbox" className="mr-2 rounded accent-primary" />
@@ -78,6 +88,7 @@ export default function Login() {
             </Link>
           </div>
 
+          {/* Submit Button */}
           <motion.button
             onClick={handleSubmit}
             disabled={loginLoading}
@@ -110,4 +121,3 @@ export default function Login() {
     </motion.div>
   );
 }
-

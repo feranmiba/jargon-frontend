@@ -9,27 +9,52 @@ const API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'https://your-backend-api.com/api/auth';
 
 
-async function request(endpoint: string, data?: any, method: string = 'POST') {
-  const res = await fetch(`${API_URL}/${endpoint}`, {
-    method,
-    headers: { 'Content-Type': 'application/json' },
-    body: data ? JSON.stringify(data) : undefined,
-  });
-
-  if (!res.ok) {
-    const error = await res.json().catch(() => ({}));
-    throw new Error(error.message || 'Something went wrong');
+  async function request(endpoint: string, data?: any, method: string = 'POST') {
+    const isFormEncoded = endpoint === 'user_login'; 
+  
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+    };
+  
+    let body: BodyInit | undefined;
+  
+    if (data) {
+      if (isFormEncoded) {
+        headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        const formData = new URLSearchParams();
+        for (const key in data) {
+          if (data[key] !== undefined && data[key] !== null) {
+            formData.append(key, data[key]);
+          }
+        }
+        body = formData.toString();
+      } else {
+        headers['Content-Type'] = 'application/json';
+        body = JSON.stringify(data);
+      }
+    }
+  
+    const res = await fetch(`${API_URL}/${endpoint}`, {
+      method,
+      headers,
+      body,
+    });
+  
+    if (!res.ok) {
+      const error = await res.json().catch(() => ({}));
+      throw new Error(error.detail || error.message || 'Something went wrong');
+    }
+  
+    return res.json();
   }
-
-  return res.json();
-}
+  
 
 export function useAuth() {
   const { setToken, clearToken } = useAuthStore();
 
 
   const signUpMutation = useMutation({
-    mutationFn: (data: AuthInputs) => request('create-user', data),
+    mutationFn: (data: AuthInputs) => request('create_user', data),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: 'loading', message: 'Creating account...' });
@@ -38,7 +63,7 @@ export function useAuth() {
       toast.dismiss();
       showToast({
         type: 'success',
-        message: data.message || 'Account created successfully!',
+        message: data.message || 'Account created successfully! Please check your email to verify with the link provided.',
       });
     },
     onError: (error: any) => {
@@ -50,7 +75,6 @@ export function useAuth() {
     },
   });
 
-  // 🔹 LOGIN
   const loginMutation = useMutation({
     mutationFn: (data: AuthInputs) => request('user_login', data),
     onMutate: () => {
@@ -60,8 +84,8 @@ export function useAuth() {
     onSuccess: (data) => {
       toast.dismiss();
 
-      if (data.token && data.expiresIn) {
-        setToken(data.token, data.expiresIn);
+      if (data.token) {
+        setToken(data.token, 7 * 60 * 60);
         showToast({
           type: 'success',
           message: data.message || 'Login successful!',
@@ -83,9 +107,8 @@ export function useAuth() {
     },
   });
 
-  // 🔹 VERIFY EMAIL
   const verifyEmailMutation = useMutation({
-    mutationFn: (data: { token: string }) => request('verify_email', data),
+    mutationFn: (data: { token: string }) => request(`verify_email?token=${data.token}`, data, 'PUT'),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: 'loading', message: 'Verifying email...' });
@@ -106,7 +129,6 @@ export function useAuth() {
     },
   });
 
-  // 🔹 FORGOT PASSWORD
   const forgotPasswordMutation = useMutation({
     mutationFn: (data: { email: string }) => request('forgot-password', data),
     onMutate: () => {
@@ -136,9 +158,9 @@ export function useAuth() {
 
   return {
     // Actions
-    signUp: signUpMutation.mutate,
-    login: loginMutation.mutate,
-    verifyEmail: verifyEmailMutation.mutate,
+   signUpMutation,
+    loginMutation,
+    verifyEmailMutation,
     forgotPassword: forgotPasswordMutation.mutate,
 
     // Statuses

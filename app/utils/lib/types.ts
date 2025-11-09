@@ -1,8 +1,9 @@
 interface AuthInputs {
-    email: string;
+    email?: string;
     password: string;
     primary_phone?: string;
     name?: string;
+    username?: string;
 }
 
 
