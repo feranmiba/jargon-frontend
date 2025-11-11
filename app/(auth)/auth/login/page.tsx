@@ -4,18 +4,22 @@ import { useState } from "react";
 import { useAuth } from "@/app/utils/apis/auth";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const { loginMutation, loginLoading } = useAuth();
   const [form, setForm] = useState({ username: "", password: "" }); 
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter()
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     try {
       const res = await loginMutation.mutateAsync(form);
-      if (res?.status === 200 || res?.success) {
+      if (res) {
         // redirect or perform post-login logic
+        router.push('/dashboard');
+        // window.location.href= "/dashboard"
       }
     } catch (error) {
       console.error("Login failed:", error);
