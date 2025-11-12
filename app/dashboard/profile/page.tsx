@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { User, Camera, Save, AlertCircle, CheckCircle } from "lucide-react";
+import { useUser } from "@/app/utils/apis/dashboard";
 
 interface ProfileData {
   first_name: string;
@@ -26,6 +27,8 @@ export default function ProfilePage() {
   const [errors, setErrors] = useState<Partial<ProfileData>>({});
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const { createProfile } = useUser();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -57,6 +60,8 @@ export default function ProfilePage() {
     if (!validateForm()) return;
 
     setLoading(true);
+
+    await createProfile.mutateAsync(formData);
     // Simulate API call
     setTimeout(() => {
       setSuccess(true);

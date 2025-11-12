@@ -1,16 +1,18 @@
 'use client';
 import { useMutation } from '@tanstack/react-query';
-import { AuthInputs } from '../lib/types';
+import { AuthInputs, Organization } from '../lib/types';
 import showToast from '@/app/components/showToast';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../store/auth';
+import { data } from 'framer-motion/client';
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || 'https://your-backend-api.com/api/auth';
 
 
   async function request(endpoint: string, data?: any, method: string = 'POST') {
-    const isFormEncoded = endpoint === 'user_login'; 
+    const isFormEncoded = endpoint === 'user_login' || endpoint === 'org/login';
+
   
     const headers: Record<string, string> = {
       'Accept': 'application/json',
@@ -151,10 +153,66 @@ export function useAuth() {
     },
   });
 
+  const organizationSignUpMutation = useMutation({
+    mutationFn: (data: Organization) => request('org/register', data),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({type: 'loading', message: 'Creating organization account...'});
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({
+        type: 'success',
+        message: data.message || 'Organization account created successfully! Please check your email to verify with the link provided.',
+      });
+    },
+    onError: (data) => {
+      toast.dismiss();
+      showToast({
+        type: 'error',
+        message: data.message || 'Failed to create organization account',
+      })
+    },
+  });
+
+  const organizationLoginMutation = useMutation({
+    mutationFn: (data: AuthInputs) => request('org/login', data),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: 'loading', message: 'Logging in...' });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+
+      if (data.token) {
+        setToken(data.token, 7 * 60 * 60);
+        showToast({
+          type: 'success',
+          message: data.message || 'Login successful!',
+        });
+      } else {
+        showToast({
+          type: 'error',
+          message: 'Missing token or expiration time',
+        });
+      }
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      clearToken();
+      showToast({
+        type: 'error',
+        message: error.message || 'Invalid login credentials',
+      });
+    },
+  });
+
   const signUpLoading = signUpMutation.status === 'pending';
   const loginLoading = loginMutation.status === 'pending';
   const verifyEmailLoading = verifyEmailMutation.status === 'pending';
   const forgotPasswordLoading = forgotPasswordMutation.status === 'pending';
+  const organizationSignUpMutationLoading = organizationSignUpMutation.status === 'pending';
+  const organizationLoginMutationLoading = organizationLoginMutation.status === 'pending';
 
   return {
     // Actions
@@ -162,6 +220,8 @@ export function useAuth() {
     loginMutation,
     verifyEmailMutation,
     forgotPassword: forgotPasswordMutation.mutate,
+    organizationSignUpMutation,
+    organizationLoginMutation,
 
     // Statuses
     signUpStatus: signUpMutation.status,
@@ -174,5 +234,7 @@ export function useAuth() {
     loginLoading,
     verifyEmailLoading,
     forgotPasswordLoading,
+    organizationSignUpMutationLoading,
+    organizationLoginMutationLoading,
   };
 }

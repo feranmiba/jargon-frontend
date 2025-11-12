@@ -1,8 +1,9 @@
 "use client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import showToast from "@/app/components/showToast";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/auth";
+import { userSavedData, UserProfile } from "../lib/types";
 
 const api_url =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -52,5 +53,43 @@ export function useUser() {
     });
   };
 
-  return { getUserRequestedData };
+
+  const saveData = useMutation({
+    mutationFn: (data: userSavedData) =>
+      request("data_vault/save_data_vault", token || undefined, data),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Saving data..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Data saved successfully!" });
+    },
+  });
+
+  const createProfile = useMutation({
+    mutationFn: (data: Partial<UserProfile>) =>
+      request("create_user_profile", token || undefined, data),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Creating profile..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Profile created successfully!" });
+    },
+  });
+
+
+
+
+  return { getUserRequestedData, saveData, createProfile };
 }

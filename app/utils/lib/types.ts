@@ -7,16 +7,35 @@ interface AuthInputs {
 }
 
 interface userSavedData {
-    user_id: string;
-    datat_type: string;
+    user_id?: string;
+    data_type: string;
     encrypted_data: string;
-    data_hash: string;
+    data_hash?: string;
+}
 
+interface UserProfile {
+    id: string;
+    first_name: string;
+    last_name: string;
+    phone_number: string;
+    is_email_verified: boolean;
+    date_of_birth: string;
+    address: string;
+}
+
+interface Organization {
+   organization_name:string;
+   contact_name: string;
+   contact_email: string;
+   document_type: string;
+   document_reference: string;
+   document_storage_url: string;
+   password:string;
 }
 
 
 
-export type { AuthInputs };
+export type { AuthInputs, userSavedData, UserProfile, Organization };
 
 
 

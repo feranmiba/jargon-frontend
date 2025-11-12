@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Database, CheckCircle, AlertCircle } from "lucide-react";
+import { useUser } from "@/app/utils/apis/dashboard";
 
 const dataTypes = [
   {
@@ -48,40 +49,54 @@ export default function AddDataPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { saveData } = useUser();
 
   const selectedDataType = dataTypes.find((dt) => dt.value === selectedType);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     setError("");
     setSuccess(false);
-
+  
     if (!selectedType) {
       setError("Please select a data type");
       return;
     }
-
+  
     if (!dataValue.trim()) {
       setError("Please enter your data");
       return;
     }
-
+  
     if (selectedDataType && !selectedDataType.pattern.test(dataValue)) {
       setError(
         `Invalid format. Expected format: ${selectedDataType.placeholder}`
       );
       return;
     }
-
-    setLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+  
+    const payload = {
+      data_type: selectedType,
+      encrypted_data: dataValue.trim(),
+    };
+  
+    try {
+      setLoading(true);
+  
+      await saveData.mutateAsync(payload);
+  
       setSuccess(true);
-      setLoading(false);
       setDataValue("");
       setSelectedType("");
-    }, 1500);
+  
+    } catch (err: any) {
+      setError(err.message || "Failed to save data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
