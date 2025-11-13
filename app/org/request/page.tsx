@@ -183,7 +183,7 @@ function RequestData() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             onSubmit={handleSubmit}
-            className="bg-base  rounded-3xl shadow-2xl border border-gray-100  overflow-hidden"
+            className="bg-base  rounded-3xl  border border-gray-100  overflow-hidden"
           >
             <div className="p-8 space-y-8">
               {/* Data Types Selection */}

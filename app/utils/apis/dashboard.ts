@@ -138,7 +138,29 @@ export function useUser() {
       enabled, 
     });
   };
-  
+
+
+  const approveOrRejectData = useMutation({
+    mutationFn: (data: { data_id: string; action: "approve" | "reject" | "un_approve" }) =>
+      request(
+        `approve_reject?data_id=${data.data_id}&response=${data.action}`,
+        token || undefined,
+        undefined,
+        "PATCH"
+      ),
+  onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Processing request..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Request processed successfully!" });
+    }
+  });
 
   const orgAdduserData = useMutation({
     mutationFn: (data: userSavedData) =>
@@ -160,5 +182,5 @@ export function useUser() {
 
 
 
-  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData };
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData };
 }

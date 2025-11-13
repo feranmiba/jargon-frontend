@@ -12,7 +12,6 @@ export default function StudentDashboardHome() {
   const { getUserRequestedData } = useUser();
   const { data, isLoading, isError } = getUserRequestedData();
 
-  // 🔥 Show toast based on query state
   React.useEffect(() => {
     toast.dismiss();
     if (isLoading) {
@@ -24,7 +23,6 @@ export default function StudentDashboardHome() {
     }
   }, [isLoading, isError, data]);
 
-  // ✨ Custom glowing blur loading screen
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-base relative overflow-hidden">
@@ -164,7 +162,7 @@ export default function StudentDashboardHome() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-title">Recent Requests</h2>
           <Link
-            href="/studentDashboard/actions"
+            href="/dashboard/actions"
             className="text-primary hover:underline text-sm font-medium"
           >
             View All →

@@ -20,12 +20,7 @@ const sidebarItems = [
     icon: ShieldCheck,
     text: "Request Data",
     href: "/org/request",
-  },
-  {
-    icon: User,
-    text: "Profile",
-    href: "/dashboard/profile",
-  },
+  }
 ];
 
 function StudentDashboardLayout({

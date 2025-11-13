@@ -38,6 +38,7 @@ export default function OrganizationDataPage() {
         data_type: dataType,
         encrypted_data: encryptedData,
         email,
+        user_id: ""
       });
       setDataType("");
       setEncryptedData("");

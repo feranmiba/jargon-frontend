@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import { Shield, Lock, CheckCircle } from "lucide-react";
 import { usePathname } from "next/navigation";
-import ThemeToggle from "@/app/components/ThemeToggle";
 
 export default function AuthLayout({
   children,
@@ -192,10 +191,7 @@ export default function AuthLayout({
         {children}
       </div>
 
-      {/* Theme Toggle */}
-      <div className="absolute top-6 right-6 z-50">
-        <ThemeToggle />
-      </div>
+    
     </div>
   );
 }

@@ -10,6 +10,7 @@
   --color-title: 240 35% 20%;
   --color-highlight: 48 96% 53%;
   --color-note: 210 80% 85%;
+  --color-secondary: #ffffff
 }
 
 .dark {
@@ -19,6 +20,8 @@
   --color-title: 210 100% 98%;
   --color-highlight: 48 90% 55%;
   --color-note: 222 20% 35%;
+  --color-secondary: #1a1a1a;
+
 }
 
 body {

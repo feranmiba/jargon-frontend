@@ -23,8 +23,7 @@ function Header({ dashboardLinks, pathname }: HeaderProps) {
 
   return (
     <>
-      <section className="fixed top-0 left-0 w-full bg-[hsl(var(--color-header, 0 0% 98%))] dark:bg-[hsl(var(--color-header-dark, 0 0% 10%))]
- shadow-2xl border-b border-primary/10  z-50 px-5 py-4">
+      <section className="fixed top-0 left-0 w-full z-50 px-5 py-4 bg-[#d3cfcf]  border-b border-base/10 dark:border-base/20 backdrop-blur-sm">
         <header className="flex justify-between items-center max-w-7xl mx-auto">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
@@ -133,9 +132,6 @@ function Header({ dashboardLinks, pathname }: HeaderProps) {
       </AnimatePresence>
 
 
-       <div className="absolute top-6 right-14 z-50">
-              <ThemeToggle />
-            </div>
     </>
   );
 }

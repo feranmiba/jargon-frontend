@@ -13,6 +13,7 @@ const config: Config = {
         base: "hsl(var(--color-bg))",
         title: "hsl(var(--color-title))",
         note: "hsl(var(--color-note))",
+        secondary: "hsl(var(--color-secondary))",
       },
       transitionDuration: {
         DEFAULT: "300ms",

@@ -34,7 +34,7 @@ function StudentDashboardLayout({
   return (
     <section className="bg-base min-h-screen flex flex-col">
     {/* Header */}
-    <Header dashboardLinks={sidebarItems} pathname="/studentDashboard" />
+    <Header dashboardLinks={sidebarItems} pathname="/dashboard" />
 
     {/* Main Content Area */}
     <div className="flex flex-1 mt-16">
@@ -42,7 +42,7 @@ function StudentDashboardLayout({
         sidebarItems={sidebarItems}
         sidebarExpanded={true}
         toggleSidebar={() => {}}
-        pathname="/studentDashboard"
+        pathname="/dashboard"
       />
 
       {/* Main dashboard content */}
@@ -51,7 +51,6 @@ function StudentDashboardLayout({
       </main>
     </div>
   </section>
-
   );
 }
 

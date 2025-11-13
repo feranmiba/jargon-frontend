@@ -34,10 +34,7 @@ export default function Home() {
       <div className="absolute -top-40 -left-40 w-96 h-96 bg-primary/20 blur-[160px] rounded-full animate-pulse-slow" />
       <div className="absolute bottom-0 right-0 w-120 h-120 bg-primary/10 blur-[200px] rounded-full animate-pulse-slow" />
 
-      {/* Theme Toggle */}
-      <div className="absolute top-4 right-4 z-50">
-        <ThemeToggle />
-      </div>
+    
 
       {/* Hero Section */}
       <section className="flex flex-col items-center justify-center text-center px-6 py-24 md:py-36 space-y-8 max-w-4xl mx-auto">
@@ -54,7 +51,7 @@ export default function Home() {
         </motion.h1>
 
         <motion.p
-          className="text-lg md:text-xl text-note max-w-3xl leading-relaxed"
+          className="text-lg md:text-xl text-black max-w-3xl leading-relaxed"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -74,9 +71,7 @@ export default function Home() {
           >
             Get Started
           </button>
-          <button className="px-8 py-4 rounded-xl border border-primary text-primary font-semibold text-lg hover:bg-primary/10 transition">
-            Explore Features
-          </button>
+       
         </motion.div>
       </section>
 
@@ -119,7 +114,7 @@ export default function Home() {
                 {f.icon === "network" && <NetworkIcon />}
               </div>
               <h3 className="text-xl font-semibold text-title mb-2">{f.title}</h3>
-              <p className="text-note">{f.desc}</p>
+              <p className="text-black/50">{f.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -130,13 +125,13 @@ export default function Home() {
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-title">
           Ready to Secure Your Digital Life?
         </h2>
-        <p className="max-w-2xl mx-auto mb-8 text-note leading-relaxed text-lg">
+        <p className="max-w-2xl mx-auto mb-8 text-black/50 leading-relaxed text-lg">
           Start using Jargon today and regain full control over your data sovereignty.
         </p>
         <motion.button
           whileHover={{ scale: 1.05 }}
           onClick={() => setShowModal(true)}
-          className="px-10 py-4 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-primary/40 transition"
+          className="px-10 py-4 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-primary/40 transition cursor-pointer"
         >
           Get Started Now
         </motion.button>
@@ -144,10 +139,10 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="py-10 text-center bg-base border-t border-primary/10">
-        <p className="text-sm text-note">
+        <p className="text-sm text-black">
           © {new Date().getFullYear()} Jargon — Built for the Data Sovereignty Hackathon.
         </p>
-        <div className="flex justify-center gap-6 mt-4 text-note">
+        <div className="flex justify-center gap-6 mt-4 text-black">
           <a href="#" className="hover:text-primary transition">
             <Github />
           </a>
@@ -168,31 +163,31 @@ export default function Home() {
           animate={{ opacity: 1 }}
         >
           <motion.div
-            className="bg-base text-title rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-primary/20"
+            className="bg-white text-title rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-primary/20"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
           >
             <h3 className="text-2xl font-bold mb-3">Choose Your Role</h3>
-            <p className="text-note mb-8">
+            <p className="text-black mb-8">
               You can use Jargon either as a participant or as an organization.
             </p>
 
             <div className="flex flex-col gap-4">
               <button
                 onClick={() => router.push("/auth/login")}
-                className="w-full py-3 rounded-xl bg-primary text-white font-semibold hover:opacity-90 transition"
+                className="w-full py-3 rounded-xl bg-primary text-white font-semibold hover:opacity-90 transition cursor-pointer"
               >
                 Continue as Participant
               </button>
               <button
                 onClick={() => router.push("/org/login")}
-                className="w-full py-3 rounded-xl border border-primary text-primary font-semibold hover:bg-primary/10 transition"
+                className="w-full py-3 rounded-xl border border-primary  font-semibold hover:bg-primary/10 transition text-black/60 cursor-pointer"
               >
                 Continue as Organization
               </button>
               <button
                 onClick={() => setShowModal(false)}
-                className="text-sm text-note mt-3 hover:text-primary"
+                className="text-sm text-black mt-3 hover:text-primary cursor-pointer"
               >
                 Cancel
               </button>

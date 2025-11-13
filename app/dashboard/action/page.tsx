@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Building2,
@@ -9,68 +9,108 @@ import {
   Clock,
   CheckCircle,
   XCircle,
+  Hourglass,
 } from "lucide-react";
 import { useUser } from "@/app/utils/apis/dashboard";
 
-interface DataRequest {
-  id: string;
-  organization: string;
-  dataTypes: string[];
-  requestDate: string;
-  status: "pending" | "approved" | "rejected";
-}
+type APIResponse = {
+  "Data Type": string;
+  Data: string;
+  idx: string;
+  "Created At": string;
+  "Updated At": string;
+  "Requested By": string;
+  status: string;
+  Duration: number;
+};
 
 export default function ActionsPage() {
-  const { getUserRequestedData } = useUser();
+  const { getUserRequestedData, approveOrRejectData } = useUser();
+  const { data, isLoading, isError, refetch } = getUserRequestedData();
 
-  const { data } = getUserRequestedData();
-  const [requests, setRequests] = useState<DataRequest[]>([
-    {
-      id: "1",
-      organization: "TechCorp Nigeria",
-      dataTypes: ["NIN", "BVN"],
-      requestDate: "2 hours ago",
-      status: "pending",
-    },
-    {
-      id: "2",
-      organization: "Fintech Solutions",
-      dataTypes: ["Driver License"],
-      requestDate: "5 hours ago",
-      status: "pending",
-    },
-    {
-      id: "3",
-      organization: "Healthcare Plus",
-      dataTypes: ["NIN"],
-      requestDate: "1 day ago",
-      status: "pending",
-    },
-  ]);
+  const [filter, setFilter] = useState<
+    "all" | "pending" | "approved" | "rejected" | "expired"
+  >("all");
 
-  const [filter, setFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
+  const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const handleAction = (id: string, action: "approved" | "rejected") => {
-    setRequests((prev) =>
-      prev.map((req) => (req.id === id ? { ...req, status: action } : req))
-    );
+  const handleAction = async (
+    data_id: string,
+    action: "approve" | "reject"
+  ) => {
+    try {
+      setLoadingId(data_id);
+      await approveOrRejectData.mutateAsync({ data_id, action });
+      refetch();
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingId(null);
+    }
   };
+
+  const requests = useMemo(() => {
+    if (!data) return [];
+
+    const now = new Date();
+
+    return data.map((item: APIResponse, index: number) => {
+      const createdAt = new Date(item["Created At"]);
+      const expiresAt = new Date(
+        createdAt.getTime() + item.Duration * 60 * 1000
+      );
+      const expired = now > expiresAt;
+      const remainingMins = Math.max(
+        0,
+        Math.round((expiresAt.getTime() - now.getTime()) / 60000)
+      );
+
+      return {
+        id: item.idx || String(index),
+        organization: item["Requested By"] || "Unknown Org",
+        dataTypes: [item["Data Type"]],
+        requestDate: createdAt.toLocaleString(),
+        expired,
+        remainingMins,
+        status:
+          expired && item.status === "un_approved"
+            ? "expired"
+            : item.status === "un_approved"
+            ? "pending"
+            : item.status === "approve"
+            ? "approve"
+            : "rejected",
+      };
+    });
+  }, [data]);
 
   const filteredRequests =
     filter === "all"
       ? requests
-      : requests.filter((req) => req.status === filter);
+      : requests.filter((r: any) => r.status === filter);
+
+  if (isLoading)
+    return (
+      <div className="flex items-center justify-center h-64 text-primary">
+        <Clock className="animate-spin mr-2" />
+        Loading requests...
+      </div>
+    );
+
+  if (isError)
+    return (
+      <div className="text-center text-red-500 font-medium py-10">
+        Failed to load requests 😞
+      </div>
+    );
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
         <h1 className="text-3xl font-bold text-title mb-2">Data Requests</h1>
         <p className="text-base opacity-60">
-          Review and manage organization data requests
+          Review, approve, or reject organization data requests
         </p>
       </motion.div>
 
@@ -79,8 +119,9 @@ export default function ActionsPage() {
         {[
           { value: "all", label: "All Requests" },
           { value: "pending", label: "Pending" },
-          { value: "approved", label: "Approved" },
+          { value: "approve", label: "Approve" },
           { value: "rejected", label: "Rejected" },
+          { value: "expired", label: "Expired" },
         ].map((tab) => (
           <button
             key={tab.value}
@@ -94,7 +135,7 @@ export default function ActionsPage() {
             {tab.label} (
             {tab.value === "all"
               ? requests.length
-              : requests.filter((r) => r.status === tab.value).length}
+              : requests.filter((r: any) => r.status === tab.value).length}
             )
           </button>
         ))}
@@ -103,14 +144,16 @@ export default function ActionsPage() {
       {/* Requests List */}
       <div className="space-y-4">
         <AnimatePresence>
-          {filteredRequests.map((request, index) => (
+          {filteredRequests.map((request: any, index: any) => (
             <motion.div
               key={request.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, x: -100 }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-base border border-primary/10 rounded-2xl p-6 shadow-sm"
+              transition={{ delay: index * 0.05 }}
+              className={`bg-base border border-primary/10 rounded-2xl p-6 shadow-sm ${
+                request.expired ? "opacity-70" : ""
+              }`}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-start gap-4">
@@ -122,7 +165,7 @@ export default function ActionsPage() {
                       {request.organization}
                     </h3>
                     <div className="flex flex-wrap gap-2 mb-2">
-                      {request.dataTypes.map((type) => (
+                      {request.dataTypes.map((type: any) => (
                         <span
                           key={type}
                           className="px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full"
@@ -131,36 +174,62 @@ export default function ActionsPage() {
                         </span>
                       ))}
                     </div>
-                    <p className=" text-base opacity-60 flex items-center gap-2">
+                    <p className="text-base opacity-60 flex items-center gap-2">
                       <Clock className="w-4 h-4" />
-                      {request.requestDate}
+                      Requested: {request.requestDate}
                     </p>
+
+                    {request.expired ? (
+                      <p className="text-sm text-red-500 mt-1">
+                        ❌ Expired — Duration exceeded
+                      </p>
+                    ) : (
+                      <p className="text-sm text-green-600 mt-1">
+                        ⏳ Expires in {request.remainingMins} mins
+                      </p>
+                    )}
                   </div>
                 </div>
 
+                {/* Actions */}
                 <div className="flex items-center gap-3">
-                  {request.status === "pending" ? (
+                  {request.expired ? (
+                    <div className="flex items-center gap-2 px-4 py-2 bg-gray-200 text-gray-600 rounded-xl font-medium">
+                      <Hourglass className="w-4 h-4" />
+                      Expired
+                    </div>
+                  ) : request.status === "pending" ? (
                     <>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleAction(request.id, "approved")}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors"
+                        onClick={() => handleAction(request.id, "approve")}
+                        disabled={loadingId === request.id}
+                        className="flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-xl font-medium hover:bg-green-600 transition-colors disabled:opacity-70"
                       >
-                        <Check className="w-4 h-4" />
+                        {loadingId === request.id ? (
+                          <Clock className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Check className="w-4 h-4" />
+                        )}
                         Approve
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        onClick={() => handleAction(request.id, "rejected")}
-                        className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors"
+                        onClick={() => handleAction(request.id, "reject")}
+                        disabled={loadingId === request.id}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors disabled:opacity-70"
                       >
-                        <X className="w-4 h-4" />
+                        {loadingId === request.id ? (
+                          <Clock className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <X className="w-4 h-4" />
+                        )}
                         Reject
                       </motion.button>
                     </>
-                  ) : request.status === "approved" ? (
+                  ) : request.status === "approve" ? (
                     <div className="flex items-center gap-2 px-4 py-2 bg-green-100 text-green-700 rounded-xl font-medium">
                       <CheckCircle className="w-4 h-4" />
                       Approved
