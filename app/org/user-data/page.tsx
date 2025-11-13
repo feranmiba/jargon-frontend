@@ -170,7 +170,7 @@ export default function OrganizationDataPage() {
                     <p className="font-semibold text-primary">
                       {item["Data Type"].toUpperCase()}
                     </p>
-                    <p className="text-note">{item["Data"]}</p>
+                    <p className="text-black/80">{item["Data"]}</p>
                   </div>
                   <p className="text-sm text-gray-500">
                     {new Date(item["Created At"]).toLocaleDateString()}

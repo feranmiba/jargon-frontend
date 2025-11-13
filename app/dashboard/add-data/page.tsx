@@ -41,85 +41,104 @@ const dataTypes = [
     pattern: /^\d{2}[A-Z]{2}\d{11}[A-Z]{2}\d{2}$/,
     placeholder: "90F5B639210270811ABC12",
   },
+  // 🔥 Added here
+  {
+    value: "other",
+    label: "Other (Specify Manually)",
+    length: null,
+    pattern: null,
+    placeholder: "",
+  },
 ];
 
 export default function AddDataPage() {
   const [selectedType, setSelectedType] = useState("");
   const [dataValue, setDataValue] = useState("");
+  const [customType, setCustomType] = useState(""); // 🔥 new state
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
   const { saveData } = useUser();
 
   const selectedDataType = dataTypes.find((dt) => dt.value === selectedType);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
     setError("");
     setSuccess(false);
-  
+
     if (!selectedType) {
       setError("Please select a data type");
       return;
     }
-  
+
+    // 🔥 If "other", user must enter custom type
+    if (selectedType === "other" && !customType.trim()) {
+      setError("Please specify the custom data type");
+      return;
+    }
+
     if (!dataValue.trim()) {
       setError("Please enter your data");
       return;
     }
-  
-    if (selectedDataType && !selectedDataType.pattern.test(dataValue)) {
+
+    // Validation only for non-other
+    if (
+      selectedDataType &&
+      selectedType !== "other" &&
+      selectedDataType.pattern &&
+      !selectedDataType.pattern.test(dataValue)
+    ) {
       setError(
         `Invalid format. Expected format: ${selectedDataType.placeholder}`
       );
       return;
     }
-  
+
+    // 🔥 Build final type (lowercase)
+    const finalType =
+      selectedType === "other"
+        ? customType.trim().toLowerCase()
+        : selectedType.toLowerCase();
+
     const payload = {
-      data_type: selectedType,
+      data_type: finalType,
       encrypted_data: dataValue.trim(),
     };
-  
+
     try {
       setLoading(true);
-  
       await saveData.mutateAsync(payload);
-  
+
       setSuccess(true);
       setDataValue("");
+      setCustomType("");
       setSelectedType("");
-  
     } catch (err: any) {
       setError(err.message || "Failed to save data. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <h1 className="text-3xl font-bold text-title mb-2">Add Your Data</h1>
-        <p className="text-base opacity-60">
-          Securely store your personal identification data
-        </p>
-      </motion.div>
+      <h1 className="text-3xl font-bold text-title mb-2">Add Your Data</h1>
+      <p className="text-base opacity-60">
+        Securely store your personal identification data
+      </p>
 
       {/* Form Card */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
         className="bg-base border border-primary/10 rounded-2xl p-8 shadow-sm"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Data Type Selection */}
+          {/* Data Type Select */}
           <div>
             <label className="block text-sm font-semibold text-title mb-3">
               Select Data Type <span className="text-red-500">*</span>
@@ -129,9 +148,10 @@ export default function AddDataPage() {
               onChange={(e) => {
                 setSelectedType(e.target.value);
                 setDataValue("");
+                setCustomType("");
                 setError("");
               }}
-              className="w-full px-4 py-3 bg-base border-2 border-primary/20 rounded-xl text-base focus:outline-none focus:border-primary transition-all"
+              className="w-full px-4 py-3 bg-base border-2 border-primary/20 rounded-xl"
             >
               <option value="">Choose data type...</option>
               {dataTypes.map((type) => (
@@ -142,95 +162,71 @@ export default function AddDataPage() {
             </select>
           </div>
 
-          {/* Data Value Input */}
-          {selectedType && (
+          {/* 🔥 Custom Type Input */}
+          {selectedType === "other" && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
+              className="space-y-2"
             >
+              <label className="block text-sm font-semibold text-title">
+                Enter Custom Data Type *
+              </label>
+              <input
+                type="text"
+                value={customType}
+                onChange={(e) => setCustomType(e.target.value)}
+                placeholder="e.g., tax_id, birth_cert"
+                className="w-full px-4 py-3 bg-base border-2 border-primary/20 rounded-xl"
+              />
+            </motion.div>
+          )}
+
+          {/* Data Input */}
+          {selectedType && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <label className="block text-sm font-semibold text-title mb-3">
-                Enter {selectedDataType?.label}{" "}
-                <span className="text-red-500">*</span>
+                Enter Data <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={dataValue}
-                onChange={(e) => {
-                  setDataValue(e.target.value.toUpperCase());
-                  setError("");
-                }}
-                placeholder={selectedDataType?.placeholder}
-                className={`w-full px-4 py-3 bg-base border-2 rounded-xl text-base focus:outline-none transition-all ${
-                  error
-                    ? "border-red-500 focus:border-red-500"
-                    : "border-primary/20 focus:border-primary"
-                }`}
+                onChange={(e) =>
+                  setDataValue(e.target.value.toUpperCase())
+                }
+                placeholder={selectedDataType?.placeholder || ""}
+                className="w-full px-4 py-3 bg-base border-2 border-primary/20 rounded-xl"
               />
-              <p className=" text-base opacity-50 mt-2">
-                Format: {selectedDataType?.placeholder} ({selectedDataType?.length}{" "}
-                characters)
-              </p>
             </motion.div>
           )}
 
-          {/* Error Message */}
+          {/* Error */}
           {error && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl"
-            >
-              <AlertCircle className="w-5 h-5 text-red-500" />
-              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-            </motion.div>
+            <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-2">
+              <AlertCircle className="text-red-500 w-5 h-5" />
+              <p className="text-red-600">{error}</p>
+            </div>
           )}
 
-          {/* Success Message */}
+          {/* Success */}
           {success && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-2 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl"
-            >
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <p className="text-sm text-green-600 dark:text-green-400">
+            <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-2">
+              <CheckCircle className="text-green-500 w-5 h-5" />
+              <p className="text-green-600">
                 Data added successfully and encrypted!
               </p>
-            </motion.div>
+            </div>
           )}
 
-          {/* Submit Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          {/* Button */}
+          <button
             type="submit"
             disabled={loading || !selectedType}
-            className="w-full flex items-center justify-center gap-2 bg-primary text-white px-6 py-4 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/25"
+            className="w-full px-6 py-4 bg-primary text-white rounded-xl font-semibold"
           >
-            {loading ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                />
-                Adding Data...
-              </>
-            ) : (
-              <>
-                <Database className="w-5 h-5" />
-                Add Data Securely
-              </>
-            )}
-          </motion.button>
+            {loading ? "Saving..." : "Add Data Securely"}
+          </button>
         </form>
-
-        {/* Info Box */}
-        <div className="mt-6 p-4 bg-primary/5 rounded-xl">
-          <p className=" text-base opacity-60 text-center">
-            🔒 Your data is encrypted end-to-end and stored securely
-          </p>
-        </div>
       </motion.div>
     </div>
   );

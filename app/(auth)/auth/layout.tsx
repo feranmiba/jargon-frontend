@@ -31,8 +31,8 @@ export default function AuthLayout({
           "Account secured",
           "Ready to protect your data"
         ]
-      };
-    } else {
+      }; 
+    } else if (pathname?.includes("login")) {
       return {
         title: "Welcome Back",
         subtitle: "Your privacy fortress awaits. Sign in securely.",
@@ -40,6 +40,16 @@ export default function AuthLayout({
           "Military-grade encryption",
           "Biometric authentication",
           "Zero data tracking"
+        ]
+      };
+    } else {
+      return {
+        title: "Welcome to JARGON",
+        subtitle: "Your gateway to secure and private digital identity management",
+        features: [
+          "Data ownership & control",
+          "Decentralized identity",
+          "Cutting-edge security"
         ]
       };
     }

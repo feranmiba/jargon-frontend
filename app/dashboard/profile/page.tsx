@@ -43,7 +43,6 @@ export default function ProfilePage() {
 
   const queryClient = useQueryClient();
 
-  // Prefill the form when user data is fetched
   useEffect(() => {
     if (data) {
       setFormData({
@@ -186,7 +185,6 @@ export default function ProfilePage() {
           </div>
         </motion.div>
       ) : (
-        // EDIT MODE (Your Existing Form)
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -9,7 +9,7 @@ const sidebarItems = [
   {
     icon: Home,
     text: "Home",
-    href: "/dashboard",
+    href: "/org",
   },
   {
     icon: Database,

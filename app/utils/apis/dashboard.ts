@@ -104,6 +104,24 @@ export function useUser() {
     },
     onSuccess: (data) => {
       toast.dismiss();
+      showToast({ type: "success", message: "Profile updated successfully!" });
+    },
+  });
+
+
+  const createUserProfile = useMutation({
+    mutationFn: (data: Partial<UserProfile>) =>
+      request("create_user_profile", token || undefined, data, "PATCH"),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Creating profile..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
       showToast({ type: "success", message: "Profile created successfully!" });
     },
   });
@@ -179,8 +197,14 @@ export function useUser() {
     },
   });
 
+  const orgStats = () => {
+    return useQuery({
+      queryKey: ["orgStats"],
+      queryFn: () => request("org/get_org_stat", token || undefined, undefined, "GET"),
+    });
+  }
 
 
 
-  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData };
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile };
 }

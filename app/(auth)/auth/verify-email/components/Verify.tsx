@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useAuth } from "@/app/utils/apis/auth";
 import { Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function VerifyEmail() {
   const { verifyEmailMutation } = useAuth();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
+  const router = useRouter();
 
   const [status, setStatus] = useState<"loading" | "success" | "error" | "idle">("idle");
   const [message, setMessage] = useState<string>("");
@@ -25,6 +27,7 @@ export default function VerifyEmail() {
         setStatus("loading");
         const res = await verifyEmailMutation.mutateAsync({ token });
         setStatus("success");
+        router.push("/auth/create-profile")
         setMessage(res?.message || "Your email has been verified successfully!");
       } catch (err: any) {
         setStatus("error");

@@ -455,7 +455,7 @@ function RequestData() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-base rounded-3xl p-8 max-w-md w-full shadow-2xl"
+              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl"
             >
               <motion.div
                 initial={{ scale: 0 }}
