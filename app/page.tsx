@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 import ThemeToggle from "./components/ThemeToggle";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Home() {
-
   const router = useRouter();
-
+  const [showModal, setShowModal] = useState(false);
 
   const features = [
     {
@@ -48,7 +48,7 @@ export default function Home() {
           transition={{ duration: 0.7 }}
         >
           Take Control of Your{" "}
-          <span className="bg-linear-to-r from-primary to-secondary bg-clip-text text-blue-800">
+          <span className="bg-linear-to-r from-primary to-blue-500 bg-clip-text text-transparent">
             Digital Identity
           </span>
         </motion.h1>
@@ -68,7 +68,10 @@ export default function Home() {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
         >
-          <button className="px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg hover:shadow-primary/30 cursor-pointer" onClick={() => router.push('/auth/signup')}>
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-8 py-4 rounded-xl bg-primary text-white font-semibold text-lg hover:scale-105 transition-transform shadow-lg hover:shadow-primary/30 cursor-pointer"
+          >
             Get Started
           </button>
           <button className="px-8 py-4 rounded-xl border border-primary text-primary font-semibold text-lg hover:bg-primary/10 transition">
@@ -87,7 +90,7 @@ export default function Home() {
       </motion.div>
 
       <motion.div
-        className="absolute bottom-1/3 right-10 text-secondary/40"
+        className="absolute bottom-1/3 right-10 text-primary/40"
         animate={{ y: [0, 20, 0] }}
         transition={{ repeat: Infinity, duration: 7 }}
       >
@@ -95,7 +98,7 @@ export default function Home() {
       </motion.div>
 
       {/* Features Section */}
-      <section className="px-6 md:px-16 py-24 bg-muted/30 backdrop-blur-sm">
+      <section className="px-6 md:px-16 py-24 bg-primary/5 backdrop-blur-sm">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-title drop-shadow-md">
           Key Features
         </h2>
@@ -104,7 +107,7 @@ export default function Home() {
           {features.map((f, i) => (
             <motion.div
               key={f.title}
-              className="p-8 bg-card rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-2 transform transition duration-300 ease-in-out"
+              className="p-8 bg-base rounded-3xl shadow-lg hover:shadow-xl hover:-translate-y-2 transform transition duration-300 ease-in-out border border-primary/10"
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -123,7 +126,7 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 text-center bg-linear-to-r from-primary/10 via-transparent to-secondary/10">
+      <section className="py-20 text-center bg-linear-to-r from-primary/10 via-transparent to-blue-500/10">
         <h2 className="text-3xl md:text-4xl font-bold mb-4 text-title">
           Ready to Secure Your Digital Life?
         </h2>
@@ -132,6 +135,7 @@ export default function Home() {
         </p>
         <motion.button
           whileHover={{ scale: 1.05 }}
+          onClick={() => setShowModal(true)}
           className="px-10 py-4 bg-primary text-white rounded-xl font-semibold shadow-lg hover:shadow-primary/40 transition"
         >
           Get Started Now
@@ -139,16 +143,63 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-10 text-center bg-base border-t border-muted/30">
+      <footer className="py-10 text-center bg-base border-t border-primary/10">
         <p className="text-sm text-note">
           © {new Date().getFullYear()} Jargon — Built for the Data Sovereignty Hackathon.
         </p>
         <div className="flex justify-center gap-6 mt-4 text-note">
-          <a href="#" className="hover:text-primary transition"><Github /></a>
-          <a href="#" className="hover:text-primary transition"><Twitter /></a>
-          <a href="#" className="hover:text-primary transition"><Linkedin /></a>
+          <a href="#" className="hover:text-primary transition">
+            <Github />
+          </a>
+          <a href="#" className="hover:text-primary transition">
+            <Twitter />
+          </a>
+          <a href="#" className="hover:text-primary transition">
+            <Linkedin />
+          </a>
         </div>
       </footer>
+
+      {/* Modal */}
+      {showModal && (
+        <motion.div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
+          <motion.div
+            className="bg-base text-title rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center border border-primary/20"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+          >
+            <h3 className="text-2xl font-bold mb-3">Choose Your Role</h3>
+            <p className="text-note mb-8">
+              You can use Jargon either as a participant or as an organization.
+            </p>
+
+            <div className="flex flex-col gap-4">
+              <button
+                onClick={() => router.push("/auth/login")}
+                className="w-full py-3 rounded-xl bg-primary text-white font-semibold hover:opacity-90 transition"
+              >
+                Continue as Participant
+              </button>
+              <button
+                onClick={() => router.push("/org/login")}
+                className="w-full py-3 rounded-xl border border-primary text-primary font-semibold hover:bg-primary/10 transition"
+              >
+                Continue as Organization
+              </button>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-sm text-note mt-3 hover:text-primary"
+              >
+                Cancel
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </main>
   );
 }
@@ -179,3 +230,4 @@ function NetworkIcon() {
     </svg>
   );
 }
+
