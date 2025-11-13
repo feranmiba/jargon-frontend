@@ -11,6 +11,7 @@ interface userSavedData {
     data_type: string;
     encrypted_data: string;
     data_hash?: string;
+    email?: string;
 }
 
 interface UserProfile {
@@ -33,9 +34,15 @@ interface Organization {
    password:string;
 }
 
+interface Requesting {
+    description: string;
+    data_type: string[];
+    email: string;
+    minutes: number;
+}
 
 
-export type { AuthInputs, userSavedData, UserProfile, Organization };
+export type { AuthInputs, userSavedData, UserProfile, Organization, Requesting };
 
 
 

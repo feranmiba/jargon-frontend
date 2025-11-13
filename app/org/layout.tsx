@@ -13,13 +13,13 @@ const sidebarItems = [
   },
   {
     icon: Database,
-    text: "Add Data",
-    href: "/dashboard/add-data",
+    text: "My users Data",
+    href: "/org/user-data",
   },
   {
     icon: ShieldCheck,
     text: "Request Data",
-    href: "/dashboard/request",
+    href: "/org/request",
   },
   {
     icon: User,

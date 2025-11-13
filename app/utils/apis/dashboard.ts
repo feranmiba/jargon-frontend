@@ -3,7 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import showToast from "@/app/components/showToast";
 import toast from "react-hot-toast";
 import { useAuthStore } from "../store/auth";
-import { userSavedData, UserProfile } from "../lib/types";
+import { userSavedData, UserProfile, Requesting } from "../lib/types";
 
 const api_url =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -53,7 +53,7 @@ export function useUser() {
   const getUserRequestedData = () => {
     return useQuery({
       queryKey: ["userRequestedData"],
-      queryFn: () => request("get_user_requested_data", token || undefined, undefined, "GET"),
+      queryFn: () => request("get_thirdparty_data_requests", token || undefined, undefined, "GET"),
    
     });
   };
@@ -108,8 +108,57 @@ export function useUser() {
     },
   });
 
+  const requestDataMutation = useMutation({
+    mutationFn: (data: Requesting) =>
+      request(`org/get_user_data?description=${data.description}&email=${data.email}&minutes=${data.minutes}`, token || undefined, data.data_type),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Requesting data..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss()
+      showToast({type:"error", message: error.message});
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Data requested successfully!" });
+    }
+  })
+
+  const getRequestedForData = (email: string, enabled: boolean) => {
+    return useQuery({
+      queryKey: ["requestedData", email],
+      queryFn: () =>
+        request(
+          `org/decrypt_user_request_data?email=${email}`,
+          token || undefined,
+          undefined,
+          "GET"
+        ),
+      enabled, 
+    });
+  };
+  
+
+  const orgAdduserData = useMutation({
+    mutationFn: (data: userSavedData) =>
+      request("org/add_user_vic_data", token || undefined, data),
+  onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Adding user data..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "User data added successfully!" });
+    },
+  });
 
 
 
-  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile };
+
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData };
 }

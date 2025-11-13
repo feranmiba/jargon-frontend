@@ -59,7 +59,7 @@ export default function StudentDashboardHome() {
     {
       icon: Users,
       label: "Total Requests",
-      value: data?.totalRequests ?? "0",
+      value: data?.length ?? "0",
       change: "+12%",
       color: "from-blue-500 to-cyan-500",
     },

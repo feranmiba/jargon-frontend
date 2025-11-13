@@ -10,6 +10,7 @@ import {
   CheckCircle,
   XCircle,
 } from "lucide-react";
+import { useUser } from "@/app/utils/apis/dashboard";
 
 interface DataRequest {
   id: string;
@@ -20,6 +21,9 @@ interface DataRequest {
 }
 
 export default function ActionsPage() {
+  const { getUserRequestedData } = useUser();
+
+  const { data } = getUserRequestedData();
   const [requests, setRequests] = useState<DataRequest[]>([
     {
       id: "1",
