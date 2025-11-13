@@ -9,9 +9,8 @@ import showToast from "../components/showToast";
 import toast from "react-hot-toast";
 
 export default function StudentDashboardHome() {
-  const { getUserRequestedData, getUserSavedData } = useUser();
+  const { getUserRequestedData } = useUser();
   const { data, isLoading, isError } = getUserRequestedData();
-  const { data: savedData, isLoading: userLoading, isError:  userError } = getUserSavedData();
 
   // 🔥 Show toast based on query state
   React.useEffect(() => {
@@ -59,15 +58,15 @@ export default function StudentDashboardHome() {
     {
       icon: Users,
       label: "Total Requests",
-      value: data?.totalRequests ?? "0",
+      value: data?.totalRequests ?? "24",
       change: "+12%",
       color: "from-blue-500 to-cyan-500",
     },
     {
       icon: Building2,
-      label: "Data saved",
-      value: savedData?.length ?? "8",
-      change: `+100%`,
+      label: "Organizations",
+      value: data?.organizations ?? "8",
+      change: "+3",
       color: "from-purple-500 to-pink-500",
     },
     {
@@ -79,10 +78,29 @@ export default function StudentDashboardHome() {
     },
   ];
 
-  const recentData = savedData 
+  const recentRequests = data?.requests ?? [
+    {
+      org: "TechCorp Nigeria",
+      dataType: "NIN, BVN",
+      date: "2 hours ago",
+      status: "pending",
+    },
+    {
+      org: "Fintech Solutions",
+      dataType: "Driver License",
+      date: "5 hours ago",
+      status: "pending",
+    },
+    {
+      org: "Healthcare Plus",
+      dataType: "NIN",
+      date: "1 day ago",
+      status: "pending",
+    },
+  ];
 
 
-  if (!userLoading && !userError && savedData === null) {
+  if (!isLoading && !isError && data === null) {
     return (
       <div className="flex flex-col items-center justify-center h-screen text-center space-y-4">
         <Shield className="w-16 h-16 text-primary/40" />
@@ -144,45 +162,47 @@ export default function StudentDashboardHome() {
         className="bg-base border border-primary/10 rounded-2xl p-6 shadow-sm"
       >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-title">Recent Data</h2>
+          <h2 className="text-xl font-bold text-title">Recent Requests</h2>
+          <Link
+            href="/studentDashboard/actions"
+            className="text-primary hover:underline text-sm font-medium"
+          >
+            View All →
+          </Link>
         </div>
 
         <div className="space-y-4">
-        {recentData?.map((request: any, index: number) => (
-      <motion.div
-        key={index}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.4 + index * 0.1 }}
-        className="flex items-center justify-between p-4 bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors"
-      >
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
-            <Building2 className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <p className="font-semibold text-title">
-              {request["Data Type"].toUpperCase()}
-            </p>
-            <p className="text-base opacity-60">
-              {request["Data"]}
-            </p>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="text-base opacity-60">
-            {new Date(request["Created At"]).toLocaleDateString()}
-          </p>
-       
-        </div>
-      </motion.div>
-    ))}
+          {recentRequests.map((request: any, index: number) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.4 + index * 0.1 }}
+              className="flex items-center justify-between p-4 bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors"
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-semibold text-title">{request.org}</p>
+                  <p className="text-base opacity-60">{request.dataType}</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-base opacity-60">{request.date}</p>
+                <span className="inline-block px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded-full mt-1">
+                  Pending
+                </span>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {recentData?.length === 0 && (
+        {recentRequests.length === 0 && (
           <div className="text-center py-12">
             <Shield className="w-16 h-16 text-primary/30 mx-auto mb-4" />
-            <p className="text-base opacity-60">No Data saved</p>
+            <p className="text-base opacity-60">No pending requests</p>
           </div>
         )}
       </motion.div>

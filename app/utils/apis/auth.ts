@@ -131,6 +131,28 @@ export function useAuth() {
     },
   });
 
+  const verifyEmailOrganizationMutation = useMutation({
+    mutationFn: (data: { token: string }) => request(`org/verify_email?token=${data.token}`, data, 'PUT'),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: 'loading', message: 'Verifying email...' });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({
+        type: 'success',
+        message: data.message || 'Email verified successfully!',
+      });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({
+        type: 'error',
+        message: error.message || 'Email verification failed',
+      });
+    },
+  });
+
   const forgotPasswordMutation = useMutation({
     mutationFn: (data: { email: string }) => request('forgot-password', data),
     onMutate: () => {
@@ -213,6 +235,7 @@ export function useAuth() {
   const forgotPasswordLoading = forgotPasswordMutation.status === 'pending';
   const organizationSignUpMutationLoading = organizationSignUpMutation.status === 'pending';
   const organizationLoginMutationLoading = organizationLoginMutation.status === 'pending';
+  const verifyEmailOrganizationMutationLoading = verifyEmailOrganizationMutation.status === 'pending'
 
   return {
     // Actions
@@ -222,6 +245,7 @@ export function useAuth() {
     forgotPassword: forgotPasswordMutation.mutate,
     organizationSignUpMutation,
     organizationLoginMutation,
+    verifyEmailOrganizationMutation,
 
     // Statuses
     signUpStatus: signUpMutation.status,
@@ -233,8 +257,10 @@ export function useAuth() {
     signUpLoading,
     loginLoading,
     verifyEmailLoading,
+
     forgotPasswordLoading,
     organizationSignUpMutationLoading,
     organizationLoginMutationLoading,
+    verifyEmailOrganizationMutationLoading
   };
 }

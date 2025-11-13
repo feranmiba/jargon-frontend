@@ -17,9 +17,9 @@ export default function Login() {
     try {
       const res = await organizationLoginMutation.mutateAsync(form);
       if (res) {
-        // redirect or perform post-login logic
-        router.push('/dashboard');
-        // window.location.href= "/dashboard"
+      
+        router.push('/org');
+      
       }
     } catch (error) {
       console.error("Login failed:", error);

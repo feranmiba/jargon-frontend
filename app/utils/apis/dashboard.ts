@@ -45,6 +45,11 @@ async function request(
 export function useUser() {
   const { token, clearToken } = useAuthStore();
 
+
+  const userDataPaylod = {
+    data_type: []
+  }
+
   const getUserRequestedData = () => {
     return useQuery({
       queryKey: ["userRequestedData"],
@@ -52,6 +57,21 @@ export function useUser() {
    
     });
   };
+
+
+  const getUserSavedData = () => {
+    return useQuery({
+      queryKey: ["userSavedData"],
+      queryFn: () => request(`data_vault/get_user_data`, token || undefined, undefined, "GET"),
+    })
+  }
+
+  const getUserProfile = () => {
+    return useQuery({
+      queryKey: ["userProfile"],
+      queryFn: () => request("get_user_profile", token || undefined, undefined, "GET"),
+    });
+  }
 
 
   const saveData = useMutation({
@@ -73,7 +93,7 @@ export function useUser() {
 
   const createProfile = useMutation({
     mutationFn: (data: Partial<UserProfile>) =>
-      request("create_user_profile", token || undefined, data),
+      request("update_user_profile", token || undefined, data, "PATCH"),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: "loading", message: "Creating profile..." });
@@ -91,5 +111,5 @@ export function useUser() {
 
 
 
-  return { getUserRequestedData, saveData, createProfile };
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile };
 }

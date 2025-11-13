@@ -91,7 +91,7 @@ export default function Signup() {
       const res = await organizationSignUpMutation.mutateAsync(payload);
       if (res?.status === 200 || res?.success) {
         setTimeout(() => {
-          window.location.href = "/auth/verify-email";
+          window.location.href = "/org/verify-email";
         }, 2000);
       }
     } catch (error) {
@@ -253,7 +253,7 @@ export default function Signup() {
         <p className="text-center text-base opacity-60 mt-6">
           Already have an account?{" "}
           <Link
-            href="/auth/login"
+            href="/org/login"
             className="text-primary hover:underline font-semibold"
           >
             Sign In
