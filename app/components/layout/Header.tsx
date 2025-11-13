@@ -34,7 +34,7 @@ function Header({ dashboardLinks, pathname }: HeaderProps) {
           </Link>
 
           {/* Desktop Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* <div className="hidden md:flex items-center gap-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -45,7 +45,7 @@ function Header({ dashboardLinks, pathname }: HeaderProps) {
                 3
               </span>
             </motion.button>
-          </div>
+          </div> */}
 
           {/* Mobile Menu Button */}
           <button
