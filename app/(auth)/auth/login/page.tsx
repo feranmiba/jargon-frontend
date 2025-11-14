@@ -5,9 +5,11 @@ import { useAuth } from "@/app/utils/apis/auth";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/app/utils/apis/dashboard";
 
 export default function Login() {
   const { loginMutation, loginLoading } = useAuth();
+  const { sendResetEmail } = useUser();
   const [form, setForm] = useState({ username: "", password: "" }); 
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter()
@@ -16,16 +18,41 @@ export default function Login() {
     if (e) e.preventDefault();
     try {
       const res = await loginMutation.mutateAsync(form);
+  
       if (res) {
-        // redirect or perform post-login logic
-        router.push('/dashboard');
-        // window.location.href= "/dashboard"
+        const firstTimeUser = localStorage.getItem("firstTime");
+  
+        if (firstTimeUser === "true") {
+          router.push("/auth/create-profile");
+        } else {
+          router.push("/dashboard");
+        }
+  
+        // After redirect, remove it
+        localStorage.removeItem("firstTime");
       }
     } catch (error) {
       console.error("Login failed:", error);
     }
   };
+  
+  const handleForgotPassword = async () => {
+    try {
+      if(!form.username.trim()){
+        alert("Please enter your email or username first.");
+        return;
+      }
 
+      await sendResetEmail.mutateAsync({ email: form.username });
+  
+      alert("Password reset email sent! Check your inbox.");
+      
+     
+    } catch (error) {
+      console.error("Failed to send reset email:", error);
+    }
+  };
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -87,9 +114,9 @@ export default function Login() {
               <input type="checkbox" className="mr-2 rounded accent-primary" />
               Remember me
             </label>
-            <Link href="/forgot-password" className="text-primary hover:underline">
+            <a className="text-primary hover:underline cursor-pointer" onClick={handleForgotPassword}>
               Forgot password?
-            </Link>
+            </a>
           </div>
 
           {/* Submit Button */}

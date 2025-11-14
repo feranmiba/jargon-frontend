@@ -41,6 +41,13 @@ const dataTypes = [
     pattern: /^\d{2}[A-Z]{2}\d{11}[A-Z]{2}\d{2}$/,
     placeholder: "90F5B639210270811ABC12",
   },
+  {
+    value: "birth_cert",
+    label: "Birth_certificate Number",
+    length: 19,
+    pattern: /^\d{10,15}$/,
+    placeholder: "0123456789",
+  },
   // 🔥 Added here
   {
     value: "other",

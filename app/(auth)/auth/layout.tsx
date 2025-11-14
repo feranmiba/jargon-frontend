@@ -42,6 +42,16 @@ export default function AuthLayout({
           "Zero data tracking"
         ]
       };
+    } else if (pathname?.includes("create-profile")) {
+      return {
+        title: "Create Your Profile",
+        subtitle: "Set up your secure digital identity to get started",
+        features: [
+          "Personalized security settings",
+          "Data ownership & control",
+          "Seamless access across devices"
+        ]
+      };
     } else {
       return {
         title: "Welcome to JARGON",

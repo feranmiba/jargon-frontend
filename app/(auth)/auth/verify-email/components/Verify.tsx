@@ -27,7 +27,8 @@ export default function VerifyEmail() {
         setStatus("loading");
         const res = await verifyEmailMutation.mutateAsync({ token });
         setStatus("success");
-        router.push("/auth/create-profile")
+        localStorage.setItem("firstTime", "true");
+        router.push("/auth/login")
         setMessage(res?.message || "Your email has been verified successfully!");
       } catch (err: any) {
         setStatus("error");

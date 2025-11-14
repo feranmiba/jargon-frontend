@@ -5,12 +5,15 @@ import { useAuth } from "@/app/utils/apis/auth";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/app/utils/apis/dashboard";
 
 export default function Login() {
   const { organizationLoginMutation, organizationLoginMutationLoading } = useAuth();
   const [form, setForm] = useState({ username: "", password: "" }); 
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter()
+  const { orgSendResetEmail } = useUser();
+
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -23,6 +26,24 @@ export default function Login() {
       }
     } catch (error) {
       console.error("Login failed:", error);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+
+      if(!form.username.trim()){
+        alert("Please enter your email or username first.");
+        return;
+      }
+
+      await orgSendResetEmail.mutateAsync({ email: form.username });
+  
+      alert("Password reset email sent! Check your inbox.");
+      
+     
+    } catch (error) {
+      console.error("Failed to send reset email:", error);
     }
   };
 
@@ -87,9 +108,9 @@ export default function Login() {
               <input type="checkbox" className="mr-2 rounded accent-primary" />
               Remember me
             </label>
-            <Link href="/forgot-password" className="text-primary hover:underline">
+            <a className="text-primary hover:underline cursor-pointer" onClick={handleForgotPassword}>
               Forgot password?
-            </Link>
+            </a>
           </div>
 
           {/* Submit Button */}

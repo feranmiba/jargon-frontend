@@ -111,7 +111,7 @@ export function useUser() {
 
   const createUserProfile = useMutation({
     mutationFn: (data: Partial<UserProfile>) =>
-      request("create_user_profile", token || undefined, data, "PATCH"),
+      request("create_user_profile", token || undefined, data, "POST"),
     onMutate: () => {
       toast.dismiss();
       showToast({ type: "loading", message: "Creating profile..." });
@@ -218,7 +218,75 @@ export function useUser() {
     })
   }
 
+  const userResetPassword = useMutation({
+    mutationFn: (data: { token: string; new_password: string }) =>
+      request(`change_password?new_pass=${data.new_password}&token=${data.token}`, token || undefined, undefined, "PUT"),
+  onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Resetting password..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Password reset succesfully" });
+    },
+  });
+  const orgResetPassword = useMutation({
+    mutationFn: (data: { token: string; new_password: string }) =>
+      request(`org/change_password?new_pass=${data.new_password}&token=${data.token}`, token || undefined, undefined, "PUT"),
+  onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Resetting password..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Password reset succesfully" });
+    },
+  });
+
+  const sendResetEmail = useMutation({
+    mutationFn: (data: { email: string }) =>
+      request(`change_password_email?email=${data.email}`, undefined, undefined, "PUT"),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Sending reset email..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Reset email sent successfully" });
+    },
+  });
+
+  const orgSendResetEmail = useMutation({
+    mutationFn: (data: { email: string }) =>
+      request(`org/change_password_email?email=${data.email}`, undefined, undefined, "PUT"),
+    onMutate: () => {
+      toast.dismiss();
+      showToast({ type: "loading", message: "Sending reset email..." });
+    },
+    onError: (error: any) => {
+      toast.dismiss();
+      showToast({ type: "error", message: error.message });
+    },
+    onSuccess: (data) => {
+      toast.dismiss();
+      showToast({ type: "success", message: "Reset email sent successfully" });
+    },
+  });
 
 
-  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile, userNotification, orgNotification };
+
+
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile, userNotification, orgNotification, orgResetPassword, userResetPassword, orgSendResetEmail, sendResetEmail };
 }

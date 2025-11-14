@@ -3,7 +3,6 @@ import { GoogleGenerativeAI, Content } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
-// Define the system instruction for the expert persona
 const SYSTEM_INSTRUCTION = `
 You are an expert consultant on Nigerian Data Policy and Privacy. Your responses must be authoritative, clear, and focused on preventing data misuse by users and third parties. All advice and information must be strictly aligned with the Nigeria Data Protection Act (NDPA), 2023, and the foundational principles of privacy protected under the Nigerian Constitution. Structure your answers with clarity and provide actionable steps for compliance.
 `;
@@ -14,9 +13,9 @@ export async function POST(req: Request) {
 
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-flash",
-      systemInstruction: SYSTEM_INSTRUCTION, // ✅ FIX: Move systemInstruction directly here
+      systemInstruction: SYSTEM_INSTRUCTION, 
     });
-
+ 
     const result = await model.generateContent(prompt);
 
     return NextResponse.json({
