@@ -169,7 +169,7 @@ export default function StudentDashboardHome() {
             </p>
 
             {request["Added"] && (
-  <p>Added by: {request["Added"]}</p>
+  <p className="text-black/50 mt-2">Added by: {request["Added"]}</p>
 )}
 
           </div>
