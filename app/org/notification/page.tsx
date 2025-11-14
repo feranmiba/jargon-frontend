@@ -4,10 +4,10 @@ import React from 'react'
 import { useUser } from '@/app/utils/apis/dashboard'
 
 function Notification() {
-  const { userNotification } = useUser();
-  const { data, isLoading, isError } = userNotification();
+  const { orgNotification } = useUser();
+  const { data, isLoading, isError } = orgNotification();
 
-  const notificationPAyload = data ?? [];  // fallback to empty array
+  const notificationPAyload = data ?? []; 
 
   if (isLoading) {
     return <p className='max-w-5xl mx-auto'>Loading Notifications...</p>;
@@ -33,9 +33,7 @@ function Notification() {
           {notificationPAyload.map((notifies: any, index: number) => (
             <div key={index} className='bg-white/80 shadow-xl p-4 rounded-2xl space-y-4'>
               <p className='text-black/80'>{notifies?.content ?? "No content"}</p>
-              <p className='text-black/40'>
-              {new Date(notifies?.created_at ?? "").toLocaleString()}
-              </p>
+              <p className='text-black/40'>{notifies?.created_at ?? ""}</p>
             </div>
           ))}
 

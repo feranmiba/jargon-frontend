@@ -4,6 +4,7 @@ import React from "react";
 import Header from "../components/layout/Header";
 import DesktopSidebar from "../components/layout/Sidebar";
 import { Home, Database, ShieldCheck, User } from "lucide-react";
+import GeminiChat from "../components/GeminiChat";
 
 const sidebarItems = [
   {
@@ -33,24 +34,27 @@ function StudentDashboardLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <section className="bg-base min-h-screen flex flex-col">
-    {/* Header */}
-    <Header dashboardLinks={sidebarItems} pathname="/dashboard" />
+      {/* Header */}
+      <Header dashboardLinks={sidebarItems} pathname="/dashboard" />
 
-    {/* Main Content Area */}
-    <div className="flex flex-1 mt-16">
-      <DesktopSidebar
-        sidebarItems={sidebarItems}
-        sidebarExpanded={true}
-        toggleSidebar={() => {}}
-        pathname="/dashboard"
-      />
+      {/* Main Content Area */}
+      <div className="flex flex-1 mt-16">
+        <DesktopSidebar
+          sidebarItems={sidebarItems}
+          sidebarExpanded={true}
+          toggleSidebar={() => {}}
+          pathname="/dashboard"
+        />
 
-      {/* Main dashboard content */}
-      <main className="flex-1 p-6 overflow-y-auto">
-        {children}
-      </main>
-    </div>
-  </section>
+        {/* Main dashboard content */}
+        <main className="flex-1 p-6 overflow-y-auto">{children}</main>
+      </div>
+
+      {/* ✅ FIXED GEMINI CHAT HERE */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <GeminiChat />
+      </div>
+    </section>
   );
 }
 

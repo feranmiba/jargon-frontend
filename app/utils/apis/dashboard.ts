@@ -211,7 +211,14 @@ export function useUser() {
     })
   }
 
+  const orgNotification = () => {
+    return useQuery({
+      queryKey: ["userNotification"],
+      queryFn: () => request("org/get_user_notification", token || undefined, undefined, "GET")
+    })
+  }
 
 
-  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile, userNotification };
+
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile, userNotification, orgNotification };
 }

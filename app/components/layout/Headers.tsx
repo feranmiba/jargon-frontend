@@ -40,7 +40,7 @@ function Header({ dashboardLinks, pathname }: HeaderProps) {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="relative p-2 rounded-xl bg-primary/5 hover:bg-primary/10 transition-colors curor-pointer"
-              onClick={() => router.push("/dashboard/notification")} 
+              onClick={() => router.push("/org/notification")} 
             >
               <Bell className="w-5 h-5 text-primary" />
             </motion.button>

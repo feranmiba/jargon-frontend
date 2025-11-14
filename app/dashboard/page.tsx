@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Users, Building2, Shield } from "lucide-react";
 import Link from "next/link";
@@ -12,6 +12,13 @@ export default function StudentDashboardHome() {
   const { getUserRequestedData, getUserSavedData } = useUser();
   const { data, isLoading, isError } = getUserRequestedData();
   const { data: savedData, isLoading: userLoading, isError:  userError } = getUserSavedData();
+
+
+const [openIndex, setOpenIndex] = useState<number | null>(null);
+
+const toggleOpen = (index: number) => {
+  setOpenIndex(prev => (prev === index ? null : index));
+};
 
   // 🔥 Show toast based on query state
   React.useEffect(() => {
@@ -148,41 +155,58 @@ export default function StudentDashboardHome() {
         </div>
 
         <div className="space-y-4">
-        {recentData?.map((request: any, index: number) => (
-      <motion.div
-        key={index}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.4 + index * 0.1 }}
-        className="flex items-center justify-between p-4 bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors"
-      >
+  {recentData?.map((request: any, index: number) => (
+    <motion.div
+      key={index}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.4 + index * 0.1 }}
+      onClick={() => toggleOpen(index)}
+      className="cursor-pointer p-4 bg-primary/5 rounded-xl hover:bg-primary/10 transition-colors"
+    >
+      <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
             <Building2 className="w-5 h-5 text-white" />
           </div>
+
           <div>
             <p className="font-semibold text-title">
-              {request["Data Type"].toUpperCase()}
+              {request["Data Type"]?.toUpperCase()}
             </p>
-            <p className="text-base opacity-60">
-              {request["Data"]}
-            </p>
+
+            {/* ONLY SHOW WHEN OPEN */}
+            {openIndex === index && (
+              <motion.p
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="text-base opacity-80 mt-2"
+              >
+                {request["Data"] || "No data available"}
+              </motion.p>
+            )}
 
             {request["Added"] && (
-  <p className="text-black/50 mt-2">Added by: {request["Added"]}</p>
-)}
-
+              <p className="text-black/50 mt-2">Added by: {request["Added"]}</p>
+            )}
           </div>
         </div>
+
         <div className="text-right">
           <p className="text-base opacity-60">
-            {new Date(request["Created At"]).toLocaleDateString()}
+            {new Date(request["Created At"]).toLocaleString()}
           </p>
-       
+
+          {/* Toggle icon */}
+          <p className="text-sm text-primary mt-1">
+            {openIndex === index ? "Hide" : "View"}
+          </p>
         </div>
-      </motion.div>
-    ))}
-        </div>
+      </div>
+    </motion.div>
+  ))}
+</div>
 
         {recentData?.length === 0 && (
           <div className="text-center py-12">
