@@ -167,6 +167,11 @@ export default function StudentDashboardHome() {
             <p className="text-base opacity-60">
               {request["Data"]}
             </p>
+
+            {request["Added"] && (
+  <p>Added by: {request["Added"]}</p>
+)}
+
           </div>
         </div>
         <div className="text-right">

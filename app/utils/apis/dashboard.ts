@@ -204,7 +204,14 @@ export function useUser() {
     });
   }
 
+  const userNotification = () => {
+    return useQuery({
+      queryKey: ["userNotification"],
+      queryFn: () => request("get_user_notification", token || undefined, undefined, "GET")
+    })
+  }
 
 
-  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile };
+
+  return { getUserRequestedData, saveData, createProfile, getUserSavedData, getUserProfile, requestDataMutation, getRequestedForData, orgAdduserData, approveOrRejectData, orgStats, createUserProfile, userNotification };
 }
