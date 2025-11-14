@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Camera, Save, CheckCircle } from "lucide-react";
 import { useUser } from "@/app/utils/apis/dashboard";
+import { useRouter } from "next/navigation";
 
 interface ProfileData {
   first_name: string;
@@ -11,6 +12,7 @@ interface ProfileData {
   date_of_birth: string;
   address: string;
   phone_number: string;
+  profile_picture_url: string;
 }
 
 export default function CreateProfile() {
@@ -20,10 +22,12 @@ export default function CreateProfile() {
     date_of_birth: "",
     address: "",
     phone_number: "",
+    profile_picture_url: ""
   });
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const  router  = useRouter();
 
   const { createUserProfile } = useUser();
 
@@ -36,21 +40,29 @@ export default function CreateProfile() {
     }));
   };
 
-  // 🔥 Submit form with React Query
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
     setSuccess(false);
     setLoading(true);
-
+  
     try {
-      await createUserProfile.mutateAsync(formData);
-      setSuccess(true);
+      const response = await createUserProfile.mutateAsync(formData);
+  
+      if (response) {
+        setSuccess(true);
+  
+        // Redirect AFTER successful profile creation
+        router.push('/dashboard');
+      }
+  
     } catch (err) {
       console.error("Failed to update profile:", err);
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div>
