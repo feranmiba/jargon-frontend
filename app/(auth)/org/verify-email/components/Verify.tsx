@@ -27,7 +27,11 @@ export default function VerifyEmail() {
         setStatus("loading");
         const res = await verifyEmailOrganizationMutation.mutateAsync({ token });
         setStatus("success");
+
+        setTimeout(() => {
+
         router.push("/org/login")
+        }, 3000);
         setMessage(res?.message || "Your email has been verified successfully!");
       } catch (err: any) {
         setStatus("error");
