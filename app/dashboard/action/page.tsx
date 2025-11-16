@@ -22,6 +22,8 @@ type APIResponse = {
   "Requested By": string;
   status: string;
   Duration: number;
+  Purpose?: string; // Added the Purpose property
+  "Jargon Ai"?: string; // Added the Jargon Ai property
 };
 
 export default function ActionsPage() {
@@ -51,9 +53,9 @@ export default function ActionsPage() {
 
   const requests = useMemo(() => {
     if (!data) return [];
-
+  
     const now = new Date();
-
+  
     return data.map((item: APIResponse, index: number) => {
       const createdAt = new Date(item["Created At"]);
       const expiresAt = new Date(
@@ -64,7 +66,7 @@ export default function ActionsPage() {
         0,
         Math.round((expiresAt.getTime() - now.getTime()) / 60000)
       );
-
+  
       return {
         id: item.idx || String(index),
         organization: item["Requested By"] || "Unknown Org",
@@ -80,9 +82,14 @@ export default function ActionsPage() {
             : item.status === "approve"
             ? "approve"
             : "rejected",
+  
+        // ✅ EXTRA FIELDS YOU WANT TO DISPLAY
+        purpose: item["Purpose"] || "",
+        jargonAi: item["Jargon Ai"] || "",
       };
     });
   }, [data]);
+  
 
   const filteredRequests =
     filter === "all"
@@ -178,6 +185,20 @@ export default function ActionsPage() {
                       <Clock className="w-4 h-4" />
                       Requested: {request.requestDate}
                     </p>
+
+                    {request.purpose && (
+  <p className="text-sm mt-3 text-title/80">
+    <span className="font-semibold">Purpose:</span> {request.purpose}
+  </p>
+)}
+
+{/* Jargon AI */}
+{request.jargonAi && (
+  <div className="mt-3 p-3 bg-primary/5 rounded-xl text-sm whitespace-pre-line">
+    <span className="font-semibold block mb-1">AI Summary:</span>
+    {request.jargonAi}
+  </div>
+)}
 
                     {request.expired ? (
                       <p className="text-sm text-red-500 mt-1">
